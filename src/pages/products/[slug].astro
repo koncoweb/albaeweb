@@ -1,0 +1,178 @@
+---
+import Layout from '../../layouts/BlogPost.astro';
+import { supabase } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const { data: products, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('active', true);
+
+  if (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+
+  return products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+---
+
+<Layout
+  title={`${product.nama} | Albae Handicraft`}
+  description={product.description}
+  pubDate={new Date()}
+  heroImage={product.featured_image}
+>
+  <article class="product-detail">
+    <div class="product-header">
+      <h1>{product.nama}</h1>
+      <p class="category">{product.category}</p>
+    </div>
+
+    <div class="product-content">
+      <div class="product-image">
+        {product.featured_image && (
+          <img 
+            src={product.featured_image} 
+            alt={product.nama}
+            loading="lazy"
+          />
+        )}
+      </div>
+
+      <div class="product-info">
+        <div class="info-section">
+          <h2>Deskripsi</h2>
+          <p>{product.description}</p>
+        </div>
+
+        <div class="info-section">
+          <h2>Material</h2>
+          <p>{product.material}</p>
+        </div>
+
+        <div class="price-section">
+          <h2>Harga</h2>
+          <p class="price">Rp {product.price.toLocaleString('id-ID')}</p>
+        </div>
+
+        <div class="cta-section">
+          <a href="https://wa.me/your-number?text=Saya tertarik dengan produk: ${product.nama}" 
+             class="whatsapp-button" 
+             target="_blank">
+            Pesan via WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .product-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .product-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    font-size: 2.5rem;
+    margin: 0;
+  }
+
+  .category {
+    color: var(--color-secondary);
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+  }
+
+  .product-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .product-image {
+    border-radius: 1rem;
+    overflow: hidden;
+  }
+
+  .product-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .info-section {
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  h2 {
+    color: var(--color-secondary);
+    font-size: 1.3rem;
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    color: var(--color-text);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .price {
+    color: var(--color-primary);
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .whatsapp-button {
+    display: inline-block;
+    background: #25D366;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: bold;
+    transition: opacity 0.3s;
+    text-align: center;
+  }
+
+  .whatsapp-button:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .product-content {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .product-detail {
+      padding: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,159 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+---
+
+<Layout
+	title="Tentang Kami | Albae Handicraft"
+	description="Mengenal lebih dekat dengan Albae Handicraft, pengrajin kerajinan tangan dan kaligrafi berkualitas"
+	pubDate={new Date('January 19 2025')}
+	heroImage="/workshop-hero.jpg"
+>
+	<div class="about-content">
+		<section class="intro">
+			<h2>Selamat Datang di Albae Handicraft</h2>
+			<p>
+				Albae Handicraft adalah studio kerajinan tangan dan kaligrafi yang didedikasikan untuk menciptakan karya seni berkualitas tinggi. 
+				Didirikan dengan passion untuk melestarikan seni tradisional sambil menghadirkan sentuhan modern, kami berkomitmen untuk menghasilkan 
+				karya yang tidak hanya indah dipandang tetapi juga memiliki makna mendalam.
+			</p>
+		</section>
+
+		<section class="vision-mission">
+			<h3>Visi Kami</h3>
+			<p>
+				Menjadi pionir dalam dunia kerajinan tangan dan kaligrafi modern yang menginspirasi 
+				dan memberikan nilai tambah bagi kehidupan melalui karya seni berkualitas.
+			</p>
+
+			<h3>Misi Kami</h3>
+			<ul>
+				<li>Menciptakan karya seni berkualitas tinggi dengan memadukan teknik tradisional dan modern</li>
+				<li>Memberikan pelayanan personal dan profesional kepada setiap pelanggan</li>
+				<li>Mengembangkan inovasi dalam desain dan teknik pembuatan</li>
+				<li>Mendukung pelestarian seni tradisional melalui karya kontemporer</li>
+			</ul>
+		</section>
+
+		<section class="expertise">
+			<h3>Keahlian Kami</h3>
+			<div class="expertise-grid">
+				<div class="expertise-item">
+					<h4>Kaligrafi Modern</h4>
+					<p>
+						Menghadirkan seni kaligrafi dengan pendekatan kontemporer, 
+						menciptakan karya yang elegan dan bermakna.
+					</p>
+				</div>
+				<div class="expertise-item">
+					<h4>Kerajinan Tangan</h4>
+					<p>
+						Menghasilkan berbagai produk handmade dengan detail yang teliti 
+						dan bahan berkualitas tinggi.
+					</p>
+				</div>
+				<div class="expertise-item">
+					<h4>Kustomisasi</h4>
+					<p>
+						Mewujudkan ide dan keinginan klien menjadi karya seni yang unik 
+						dan personal.
+					</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="commitment">
+			<h3>Komitmen Kualitas</h3>
+			<p>
+				Setiap karya yang kami hasilkan melalui proses yang teliti dan standar kualitas yang tinggi. 
+				Kami menggunakan bahan-bahan terbaik dan teknik pengerjaan yang tepat untuk memastikan hasil 
+				yang memuaskan dan tahan lama.
+			</p>
+		</section>
+	</div>
+</Layout>
+
+<style>
+	.about-content {
+		max-width: 900px;
+		margin: 0 auto;
+		padding: 2rem 1rem;
+	}
+
+	section {
+		margin-bottom: 4rem;
+	}
+
+	h2 {
+		color: var(--color-primary);
+		font-size: 2.5rem;
+		margin-bottom: 1.5rem;
+		text-align: center;
+	}
+
+	h3 {
+		color: var(--color-secondary);
+		font-size: 1.8rem;
+		margin: 2rem 0 1rem;
+	}
+
+	h4 {
+		color: var(--color-primary);
+		font-size: 1.3rem;
+		margin-bottom: 0.5rem;
+	}
+
+	p {
+		line-height: 1.8;
+		margin-bottom: 1.5rem;
+	}
+
+	ul {
+		list-style-type: none;
+		padding: 0;
+	}
+
+	li {
+		margin-bottom: 1rem;
+		padding-left: 1.5rem;
+		position: relative;
+	}
+
+	li:before {
+		content: "•";
+		color: var(--color-primary);
+		position: absolute;
+		left: 0;
+	}
+
+	.expertise-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+		gap: 2rem;
+		margin-top: 2rem;
+	}
+
+	.expertise-item {
+		background: var(--color-surface);
+		padding: 2rem;
+		border-radius: 1rem;
+		transition: transform 0.3s;
+	}
+
+	.expertise-item:hover {
+		transform: translateY(-5px);
+	}
+
+	@media (max-width: 768px) {
+		h2 {
+			font-size: 2rem;
+		}
+
+		h3 {
+			font-size: 1.5rem;
+		}
+
+		.expertise-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

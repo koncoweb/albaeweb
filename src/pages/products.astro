@@ -1,0 +1,188 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+import { supabase } from '../lib/supabase';
+
+// Fetch products from Supabase
+const { data: products, error } = await supabase
+  .from('products')
+  .select('*, featured_image, description, material, slug')
+  .eq('active', true);
+
+if (error) {
+  console.error('Error fetching products:', error);
+}
+
+// Mengelompokkan produk berdasarkan kategori
+const productsByCategory = products?.reduce((acc, product) => {
+  if (!acc[product.category]) {
+    acc[product.category] = [];
+  }
+  acc[product.category].push(product);
+  return acc;
+}, {});
+---
+
+<Layout
+  title="Produk | Albae Handicraft"
+  description="Koleksi kerajinan tangan dan kaligrafi dari Albae Handicraft"
+  pubDate={new Date()}
+  heroImage="/products-hero.jpg"
+>
+  <div class="products-container">
+    <h1>Produk Kami</h1>
+    
+    {error && <p class="error">Maaf, terjadi kesalahan dalam memuat produk.</p>}
+    
+    {productsByCategory && Object.entries(productsByCategory).map(([category, categoryProducts]) => (
+      <div class="category-section">
+        <h2>{category}</h2>
+        <div class="products-grid">
+          {categoryProducts.map((product) => (
+            <a href={`/products/${product.slug}`} class="product-card">
+              {product.featured_image && (
+                <div class="image-container">
+                  <img 
+                    src={product.featured_image} 
+                    alt={product.nama}
+                    loading="lazy"
+                  />
+                </div>
+              )}
+              <div class="product-info">
+                <h3>{product.nama}</h3>
+                <p class="category">{product.category}</p>
+                <p class="description">{product.description}</p>
+                <p class="material">
+                  <span class="label">Material:</span> {product.material}
+                </p>
+                <p class="price">Rp {product.price.toLocaleString('id-ID')}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</Layout>
+
+<style>
+  .products-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  h2 {
+    color: var(--color-secondary);
+    margin: 2rem 0 1rem;
+    font-size: 1.5rem;
+  }
+
+  .category-section {
+    margin-bottom: 3rem;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .product-card {
+    background: var(--color-surface);
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .image-container {
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+  }
+
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  .product-card:hover .image-container img {
+    transform: scale(1.05);
+  }
+
+  .product-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .product-card h3 {
+    color: var(--color-primary);
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
+  .category {
+    color: var(--color-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .description {
+    color: var(--color-text);
+    font-size: 0.95rem;
+    margin: 0.5rem 0;
+    line-height: 1.5;
+  }
+
+  .material {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .label {
+    color: var(--color-secondary);
+    font-weight: 500;
+  }
+
+  .price {
+    font-weight: bold;
+    color: var(--color-primary);
+    margin: 0.5rem 0 0 0;
+    font-size: 1.1rem;
+  }
+
+  .error {
+    color: #ff4444;
+    text-align: center;
+  }
+
+  @media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .image-container {
+      height: 200px;
+    }
+  }
+</style>
