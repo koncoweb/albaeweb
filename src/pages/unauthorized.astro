@@ -1,0 +1,103 @@
+---
+import Layout from '../layouts/BlogPost.astro';
+import { supabase } from '../lib/supabase';
+
+// Ensure we're signed out when hitting this page
+await supabase.auth.signOut();
+---
+
+<Layout
+  title="Unauthorized | Albae Handicraft"
+  description="Unauthorized Access"
+  pubDate={new Date()}
+>
+  <div class="unauthorized-container">
+    <div class="unauthorized-content">
+      <h1>Akses Ditolak</h1>
+      <p>Maaf, Anda tidak memiliki izin untuk mengakses halaman ini. Halaman ini hanya dapat diakses oleh administrator.</p>
+      <div class="actions">
+        <a href="/admin/login" class="login-button">Login sebagai Admin</a>
+        <a href="/" class="home-button">Kembali ke Beranda</a>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .unauthorized-container {
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .unauthorized-content {
+    max-width: 600px;
+    text-align: center;
+    background: var(--color-surface);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  h1 {
+    color: var(--color-primary);
+    margin-bottom: 1rem;
+    font-size: 2rem;
+  }
+
+  p {
+    color: var(--color-text);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .login-button,
+  .home-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s;
+  }
+
+  .login-button {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .home-button {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+  }
+
+  .login-button:hover,
+  .home-button:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .actions {
+      flex-direction: column;
+    }
+
+    .unauthorized-content {
+      padding: 1.5rem;
+    }
+  }
+</style>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // Ensure clean slate when accessing this page
+  supabase.auth.signOut();
+</script>

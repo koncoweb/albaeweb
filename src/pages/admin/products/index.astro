@@ -1,0 +1,304 @@
+---
+import Layout from '../../../layouts/BlogPost.astro';
+import { supabase, isAdmin } from '../../../lib/supabase';
+
+// Verify admin access first
+const adminStatus = await isAdmin();
+console.log('Products page - Admin check:', adminStatus);
+
+if (!adminStatus) {
+  console.log('Products page - Not admin, redirecting');
+  await supabase.auth.signOut();
+  return Astro.redirect('/admin/login');
+}
+
+// Get products with error handling
+const { data: products, error: productsError } = await supabase
+  .from('products')
+  .select('*')
+  .order('created_at', { ascending: false });
+
+if (productsError) {
+  console.error('Products page - Fetch error:', productsError);
+  return new Response('Error fetching products', { status: 500 });
+}
+
+console.log('Products page - Products fetched:', products?.length);
+---
+
+<Layout
+  title="Manage Products | Albae Handicraft"
+  description="Admin panel untuk mengelola produk"
+  pubDate={new Date()}
+>
+  <div class="admin-container">
+    <div class="admin-nav">
+      <h1>Manage Products</h1>
+      <div class="admin-actions">
+        <a href="/admin/products/new" class="create-button">Add New Product</a>
+        <button id="logout-button" class="logout-button" type="button">Logout</button>
+      </div>
+    </div>
+
+    <div class="products-table-container">
+      <table class="products-table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr>
+              <td>
+                {product.featured_image && (
+                  <img 
+                    src={product.featured_image} 
+                    alt={product.nama}
+                    width="50"
+                    height="50"
+                    style="object-fit: cover; border-radius: 4px;"
+                  />
+                )}
+              </td>
+              <td>{product.nama}</td>
+              <td>{product.category}</td>
+              <td>Rp {product.price.toLocaleString('id-ID')}</td>
+              <td>
+                <span class={`status-badge ${product.active ? 'active' : 'inactive'}`}>
+                  {product.active ? 'Active' : 'Inactive'}
+                </span>
+              </td>
+              <td class="actions">
+                <a href={`/admin/products/${product.id}/edit`} class="edit-button">
+                  Edit
+                </a>
+                <button 
+                  class="delete-button"
+                  data-product-id={product.id}
+                  data-product-name={product.nama}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .admin-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .admin-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  h1 {
+    color: var(--color-primary);
+    margin: 0;
+  }
+
+  .create-button, .logout-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: opacity 0.3s;
+    cursor: pointer;
+  }
+
+  .create-button {
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+  }
+
+  .logout-button {
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 2px solid var(--color-border);
+  }
+
+  .create-button:hover,
+  .logout-button:hover {
+    opacity: 0.9;
+  }
+
+  .products-table-container {
+    background: var(--color-surface);
+    border-radius: 1rem;
+    overflow-x: auto;
+  }
+
+  .products-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  th, td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  th {
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .status-badge.active {
+    background: #e6f4ea;
+    color: #1e7e34;
+  }
+
+  .status-badge.inactive {
+    background: #fef1f2;
+    color: #dc3545;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .edit-button, .delete-button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.3s;
+  }
+
+  .edit-button {
+    background: var(--color-primary);
+    color: white;
+    text-decoration: none;
+  }
+
+  .delete-button {
+    background: #dc3545;
+    color: white;
+    border: none;
+  }
+
+  .edit-button:hover, .delete-button:hover {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .admin-container {
+      padding: 1rem;
+    }
+
+    .admin-nav {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .admin-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .products-table th:not(:first-child):not(:last-child),
+    .products-table td:not(:first-child):not(:last-child) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  import { supabase } from '../../../lib/supabase';
+
+  // Monitor auth state
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    console.log('Auth state changed:', event);
+    
+    if (!session || event === 'SIGNED_OUT') {
+      window.location.href = '/admin/login';
+    }
+  });
+
+  // Handle delete buttons
+  document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', async (e) => {
+      const target = e.target as HTMLButtonElement;
+      const productId = target.dataset.productId;
+      const productName = target.dataset.productName;
+      
+      if (!productId) return;
+
+      const confirmed = confirm(`Are you sure you want to delete "${productName}"?`);
+      
+      if (confirmed) {
+        try {
+          const { error } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', productId);
+            
+          if (error) throw error;
+          
+          // Refresh the page to show updated list
+          window.location.reload();
+        } catch (error: any) {
+          alert(error.message || 'Error deleting product');
+        }
+      }
+    });
+  });
+
+  // Handle logout button
+  document.getElementById('logout-button')?.addEventListener('click', async () => {
+    try {
+      await supabase.auth.signOut();
+      window.location.href = '/admin/login';
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force redirect even if error
+      window.location.href = '/admin/login';
+    }
+  });
+
+  // Initial auth check
+  async function checkAuth() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = '/admin/login';
+    }
+  }
+  
+  checkAuth();
+</script>
